@@ -91,8 +91,13 @@ async fn main() {
         .route("/notify", get(notify))
         .route("/poll-notified", get(poll_notified))
         .with_state(futures);
-    let server =
-        axum::Server::bind(&"127.0.0.1:3000".parse().unwrap()).serve(app.into_make_service());
+    let server = axum::Server::bind(
+        &std::env::var("SOCK_ADDR")
+            .unwrap_or(String::from("127.0.0.1:3000"))
+            .parse()
+            .unwrap(),
+    )
+    .serve(app.into_make_service());
     println!("Listening on 127.0.0.1:3000");
     server.await.unwrap();
 }
